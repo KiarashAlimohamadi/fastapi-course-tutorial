@@ -5,9 +5,29 @@ from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile
 from typing import Optional
 import string
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("app startup")
+
+    yield
+
+    print("app shoutdown")
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    print("app startup")
+
+    yield
+
+    print("app shoutdown")
+
 
 
 names_list = [
@@ -18,6 +38,9 @@ names_list = [
     {"id":5,"name":"shadkam"},
 ]
 
+@app.on_event("startup")
+async def startup_event():
+    names_list[0]["name"] = "paya"
 
 
 @app.get('/')
