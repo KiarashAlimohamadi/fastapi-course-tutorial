@@ -1,12 +1,11 @@
 from fileinput import filename
 from typing import List
 from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile
-#ijfujjfuj
 from typing import Optional
 import string
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-
+from dataclasses import dataclass
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,14 +18,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
-@asynccontextmanager
-async def lifespan(app:FastAPI):
-    print("app startup")
-
-    yield
-
-    print("app shoutdown")
 
 
 
@@ -50,16 +41,23 @@ def index():
     },status_code=status.HTTP_200_OK)
 
 
-
+@dataclass
+class Student:
+    name:str
+    age:int
 
 
 @app.post('/names',status_code=status.HTTP_201_CREATED)
-def create_name(name:str=Body()):
+#def create_name(name:str=Body()):
+def create_name(Student:Student=Body()):
     last_name = names_list[-1]
     id = int(last_name["id"]) + 1
-    name_obj = {"id":id,"name":name}
+    name_obj = {"id":id,"name":Student.name}
     names_list.append(name_obj)
-    return name_obj
+    return JSONResponse(content=
+                        {"name":Student.name,
+                        "age":Student.age}
+                        )
 
 
 
@@ -76,8 +74,6 @@ def update_name(name_id:int,new_name):
 @app.get("/names",status_code=status.HTTP_200_OK)
 def names():
     return names_list
-
-
 
 
 @app.get("/names/{name_id}",status_code=status.HTTP_200_OK)
