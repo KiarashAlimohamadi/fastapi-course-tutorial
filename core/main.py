@@ -1,4 +1,7 @@
-from fastapi import FastAPI,status,HTTPException
+from fileinput import filename
+from typing import List
+from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile
+#ijfujjfuj
 from typing import Optional
 import string
 from fastapi.responses import JSONResponse
@@ -28,7 +31,7 @@ def index():
 
 
 @app.post('/names',status_code=status.HTTP_201_CREATED)
-def create_name(name:str):
+def create_name(name:str=Body()):
     last_name = names_list[-1]
     id = int(last_name["id"]) + 1
     name_obj = {"id":id,"name":name}
@@ -60,3 +63,20 @@ def name_detail(name_id:int):
         if int(name["id"]) == int(name_id):
             return name
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="object not found")
+
+
+@app.post("/upload_file")
+async def upload_file(file:UploadFile):
+    content = await file.read()
+    return JSONResponse(content=
+                        {"filename":file.filename,
+                         "content_type":file.content_type,
+                         "file_size":len(content)})
+
+@app.post("/upload-multiple")
+async def upload_multiple(files:List[UploadFile]):
+    return [
+        {"filename": file.filename,
+         "content_type": file.content_type,}
+        for file in files
+    ]
