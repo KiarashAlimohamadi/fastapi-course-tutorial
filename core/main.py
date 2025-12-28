@@ -10,9 +10,7 @@ from dataclasses import dataclass
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("app startup")
-
     yield
-
     print("app shoutdown")
 
 
