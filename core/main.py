@@ -6,6 +6,8 @@ import string
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from pydantic import BaseModel
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,6 +19,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+cars_list = [
+    {"name":"lambo","id" :1},
+    {"name":"benz","id" :2},
+    {"name":"bmw","id" :3},
+    {"name":"toyota","id" :4},
+    {"name":"lexus","id" :5},
+]
 
 
 names_list = [
@@ -26,6 +35,23 @@ names_list = [
     {"id":4,"name":"ayeen"},
     {"id":5,"name":"shadkam"},
 ]
+
+#--------------------------------------------------------------------------
+
+"""
+schemas
+"""
+class PersonCreateSchema(BaseModel):
+    name:str
+
+
+class PersonResponseSchema(BaseModel):
+    name:str
+    id:int
+
+#---------------------------------------------------------------------------
+
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -39,23 +65,20 @@ def index():
     },status_code=status.HTTP_200_OK)
 
 
-@dataclass
-class Student:
-    name:str
-    age:int
+#@dataclass
+#class Student:
+#    name:str
+#    age:int
 
 
-@app.post('/names',status_code=status.HTTP_201_CREATED)
+@app.post('/names',status_code=status.HTTP_201_CREATED,response_model=PersonResponseSchema)
 #def create_name(name:str=Body()):
-def create_name(Student:Student=Body()):
+def create_name(person:PersonCreateSchema):
     last_name = names_list[-1]
     id = int(last_name["id"]) + 1
-    name_obj = {"id":id,"name":Student.name}
+    name_obj = {"id":id,"name":person.name}
     names_list.append(name_obj)
-    return JSONResponse(content=
-                        {"name":Student.name,
-                        "age":Student.age}
-                        )
+    return name_obj
 
 
 
@@ -69,7 +92,7 @@ def update_name(name_id:int,new_name):
 
 
 
-@app.get("/names",status_code=status.HTTP_200_OK)
+@app.get("/names",status_code=status.HTTP_200_OK,response_model=List[PersonResponseSchema])
 def names():
     return names_list
 
@@ -97,3 +120,5 @@ async def upload_multiple(files:List[UploadFile]):
          "content_type": file.content_type,}
         for file in files
     ]
+
+
