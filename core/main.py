@@ -6,7 +6,7 @@ import string
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from pydantic import BaseModel
+from pydantic import BaseModel,field_validator
 
 
 @asynccontextmanager
@@ -43,10 +43,14 @@ schemas
 """
 class PersonCreateSchema(BaseModel):
     name:str
+    @field_validator("name")
+    def validate_name(self,value):
+        if not value.isalpha():
+            raise ValueError("name must only contain alphabetic chars ")
+        return value
 
 
-class PersonResponseSchema(BaseModel):
-    name:str
+class PersonResponseSchema(PersonCreateSchema):
     id:int
 
 #---------------------------------------------------------------------------
