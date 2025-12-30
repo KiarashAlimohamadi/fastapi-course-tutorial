@@ -59,6 +59,8 @@ class PersonCreateSchema(BaseModel):
 class PersonResponseSchema(PersonCreateSchema):
     id:int
 
+
+
 #---------------------------------------------------------------------------
 
 
