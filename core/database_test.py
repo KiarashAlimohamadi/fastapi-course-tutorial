@@ -46,3 +46,12 @@ class User(Base):
 to create tables of the database
 """
 Base.metadata.create_all(engine)
+
+
+session = SessionLocal()
+
+#-------------------INSERTING DATA----------------------
+kiarash = User(first_name="kiarash",age=20)
+session.add(kiarash)
+session.commit()
+#----------------------------------------------------------
