@@ -51,7 +51,24 @@ Base.metadata.create_all(engine)
 session = SessionLocal()
 
 #-------------------INSERTING DATA----------------------
+"""
+
 kiarash = User(first_name="kiarash",age=20)
 session.add(kiarash)
 session.commit()
-#----------------------------------------------------------
+
+"""
+
+#-------------------BULK INSERT(INSERT MULTIPLE ITEMS)----------------------
+ayeen = User(first_name= "ayeen", age=19)
+shadkam = User(first_name= "shadkam", age=20)
+arsalan = User(first_name= "arsalan", age=19)
+users = [
+    ayeen,
+    shadkam,
+    arsalan
+]
+session.add_all(users)
+session.commit()
+
+
