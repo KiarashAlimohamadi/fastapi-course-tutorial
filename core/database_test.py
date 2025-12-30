@@ -76,7 +76,21 @@ session.commit()
 """
 
 #-------------------RETRIEVE DATA----------------------
+"""
 user_test = session.query(User).filter_by(first_name="kiarash").one_or_none()
 user_test.last_name = "alimohamadi"
 session.commit()
+"""
 
+#-------------------ADVANCED RETRIEVE DATA----------------------
+from sqlalchemy import or_,and_,not_,func
+users = session.query(User).filter(User.age >= 19).all()
+print(users)
+#----> you can use "where" instead of "filter"
+
+users2 = session.query(User).filter(or_(User.age >=19 , User.first_name=="kiarash")).all()
+
+total_users = session.query(func.count(User.id)).scalar()
+#-----> "scalar" returns a numeric response
+
+max_age = session.query(func.max(User.age)).scalar()
