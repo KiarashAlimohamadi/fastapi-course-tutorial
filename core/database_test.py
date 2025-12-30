@@ -39,7 +39,7 @@ class User(Base):
 
 
     def __repr__(self):
-        return f"User{self.id},first name{self.first_name},last name{self.last_name}"
+        return f"User{self.id},first name : {self.first_name},last name : {self.last_name}"
 
 
 """
@@ -60,6 +60,8 @@ session.commit()
 """
 
 #-------------------BULK INSERT(INSERT MULTIPLE ITEMS)----------------------
+"""
+
 ayeen = User(first_name= "ayeen", age=19)
 shadkam = User(first_name= "shadkam", age=20)
 arsalan = User(first_name= "arsalan", age=19)
@@ -71,4 +73,10 @@ users = [
 session.add_all(users)
 session.commit()
 
+"""
+
+#-------------------RETRIEVE DATA----------------------
+user_test = session.query(User).filter_by(first_name="kiarash").one_or_none()
+user_test.last_name = "alimohamadi"
+session.commit()
 
