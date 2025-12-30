@@ -19,14 +19,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-cars_list = [
-    {"name":"lambo","id" :1},
-    {"name":"benz","id" :2},
-    {"name":"bmw","id" :3},
-    {"name":"toyota","id" :4},
-    {"name":"lexus","id" :5},
-]
-
 
 names_list = [
     {"id":1,"name":"kiarash"},
