@@ -9,6 +9,8 @@ import string
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+
+from huggingface_hub.cli.inference_endpoints import describe
 from pydantic import BaseModel,field_validator,Field,field_serializer
 from database_test import Base,engine,User,get_db
 from sqlalchemy.orm import Session
@@ -128,11 +130,21 @@ def names():
 
 
 @app.get("/names/{name_id}",status_code=status.HTTP_200_OK)
-def name_detail(name_id:int):
-    for name in names_list:
-        if int(name["id"]) == int(name_id):
-            return name
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="object not found")
+def name_detail(name_id:int,db:Session = Depends(get_db)):
+    #for name in names_list:
+    #    if int(name["id"]) == int(name_id):
+    #        return name
+    #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="object not found")
+    result = db.query(User).filter(User.id == name_id).one_or_none()
+    if result:
+        return JSONResponse(content=
+                            {"first_name":result.first_name,}
+                            )
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="object not found")
+
+
 
 
 @app.post("/upload_file")
