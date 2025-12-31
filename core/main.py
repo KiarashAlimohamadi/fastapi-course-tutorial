@@ -1,3 +1,6 @@
+#--------------IMPORTS---------------------------------------------------
+
+
 from fileinput import filename
 from typing import List
 from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile
@@ -7,18 +10,32 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pydantic import BaseModel,field_validator,Field,field_serializer
+from database_test import Base,engine
+from sqlalchemy.orm import session
 
+#-------------------------------------------------------------------------
+
+
+#---------------------- LIFE SPAN -----------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("app startup")
+    Base.metadata.create_all(engine)
     yield
     print("app shoutdown")
 
+#---------------------------------------------------------------------------
+
+
+#-------------------------------- START APP ---------------------------------
 
 app = FastAPI(lifespan=lifespan)
 
+#---------------------------------------------------------------------------
 
+
+#----------------------------- THINK IT IS A DATA BASE :) ------------------
 
 names_list = [
     {"id":1,"name":"kiarash"},
@@ -27,8 +44,10 @@ names_list = [
     {"id":4,"name":"ayeen"},
     {"id":5,"name":"shadkam"},
 ]
+#---------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------
+
+#-------------------------------- SCHEMAS------------------------------------
 
 """
 schemas
@@ -56,10 +75,8 @@ class PersonResponseSchema(PersonCreateSchema):
 #---------------------------------------------------------------------------
 
 
+#------------------------------ FUNCTIONS -----------------------------------
 
-@app.on_event("startup")
-async def startup_event():
-    names_list[0]["name"] = "paya"
 
 
 @app.get('/')

@@ -72,7 +72,18 @@ to create tables of the database
 Base.metadata.create_all(engine)
 
 
-session = SessionLocal()
+
+
+
+#---------------------------- CONNECTION TO MAIN.PY -------------------------------
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 #-------------------INSERTING DATA----------------------
 """
@@ -121,12 +132,15 @@ total_users = session.query(func.count(User.id)).scalar()
 max_age = session.query(func.max(User.age)).scalar()
 """
 
-user = session.query(User).filter(User.id==1).one_or_none()
-address = session.query(Address).filter(Address.state=="tehran").one_or_none()
+#------------------------ TEST GARAGE ------------------------------------------------
 
 
-print(user)
-print(address)
+#user = session.query(User).filter(User.id==1).one_or_none()
+#address = session.query(Address).filter(Address.state=="tehran").one_or_none()
+
+
+#print(user)
+#print(address)
 #addresses = [Address(user_id = user.id,city="tehran",state="tehran",postal_code="1234567890"),
 #            Address(user_id = user.id,city="isfahan",state="isfahan",postal_code="0004567000")]
 
@@ -138,5 +152,5 @@ print(address)
 #print(addresses)
 
 
-address.user.append(user)
-session.commit()
+#address.user.append(user)
+#session.commit()
