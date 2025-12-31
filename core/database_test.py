@@ -2,6 +2,7 @@
 
 from sqlalchemy import create_engine,Column,Integer,String,Boolean,ForeignKey,Table,UniqueConstraint
 from sqlalchemy.orm import sessionmaker,declarative_base,relationship
+from config import settings
 
 #-------------------------------------------------------------------------
 
@@ -10,11 +11,11 @@ from sqlalchemy.orm import sessionmaker,declarative_base,relationship
 
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///../sqlite.db"
+
 
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
+    settings.SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread":False}
 )
 
