@@ -69,7 +69,7 @@ class Address(Base):
 """
 to create tables of the database
 """
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
 
 
 
