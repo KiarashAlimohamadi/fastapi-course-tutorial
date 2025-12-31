@@ -3,15 +3,15 @@
 
 from fileinput import filename
 from typing import List
-from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile
+from fastapi import FastAPI,status,HTTPException,Form,Body,File,UploadFile,Depends
 from typing import Optional
 import string
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pydantic import BaseModel,field_validator,Field,field_serializer
-from database_test import Base,engine
-from sqlalchemy.orm import session
+from database_test import Base,engine,User,get_db
+from sqlalchemy.orm import Session
 
 #-------------------------------------------------------------------------
 
@@ -57,18 +57,23 @@ class PersonCreateSchema(BaseModel):
     name:str = Field(default="default name",description="enter person's name")
     @field_validator("name")
     @classmethod
-    def validate_name(cls,value:str):
-        if not value.isalpha():
-            raise ValueError("name must only contain alphabetic chars ")
-        return value
+    def validate_name(cls, value: str):
+        if not value.replace(" ", "").isalpha():
+            raise ValueError("name must contain only letters and spaces")
+        return value.strip()
 
     @field_serializer("name")
     def serialize_name(self,value):
         return value.title()
 
 
-class PersonResponseSchema(PersonCreateSchema):
-    id:int
+class PersonResponseSchema(BaseModel):
+    id: int
+    name: str = Field(alias="first_name")
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
 
 
 
@@ -94,13 +99,17 @@ def index():
 
 @app.post('/names',status_code=status.HTTP_201_CREATED,response_model=PersonResponseSchema)
 #def create_name(name:str=Body()):
-def create_name(person:PersonCreateSchema):
-    last_name = names_list[-1]
-    id = int(last_name["id"]) + 1
-    name_obj = {"id":id,"name":person.name}
-    names_list.append(name_obj)
-    return name_obj
-
+def create_name(person:PersonCreateSchema,db:Session = Depends(get_db)):
+    #last_name = names_list[-1]
+    #id = int(last_name["id"]) + 1
+    #name_obj = {"id":id,"name":person.name}
+    #names_list.append(name_obj)
+    #return name_obj
+    new_user = User(first_name=person.name,age=40)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
 
 @app.put("/names/{name_id}",status_code=status.HTTP_204_NO_CONTENT)
